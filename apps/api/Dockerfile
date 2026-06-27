@@ -16,7 +16,7 @@ RUN npx prisma generate --schema=apps/api/prisma/schema.prisma
 
 COPY apps/api/ ./apps/api/
 WORKDIR /app/apps/api
-RUN nest build
+RUN nest build && ls -la dist/
 
 EXPOSE 5000
-CMD ["node", "dist/main"]
+CMD ["node", "dist/main.js"]
