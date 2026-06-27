@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { PrismaModule } from './prisma/index.js';
+import { AuthModule } from './auth/auth.module.js';
 import { PostModule } from './post/post.module.js';
 import { CommentModule } from './comment/comment.module.js';
 import { UploadModule } from './upload/upload.module.js';
@@ -25,6 +26,7 @@ import { TagModule } from './tag/tag.module.js';
       },
     }),
     PrismaModule,
+    AuthModule,
     PostModule,
     CommentModule,
     UploadModule,
