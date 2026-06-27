@@ -1,6 +1,6 @@
 FROM node:20-slim
 
-RUN npm install -g prisma @nestjs/cli
+RUN npm install -g prisma
 
 WORKDIR /app
 
@@ -13,7 +13,9 @@ RUN npm ci
 
 COPY apps/api/ ./apps/api/
 WORKDIR /app/apps/api
-RUN npx prisma generate && nest build && echo "BUILD OK" && find dist -type f 2>/dev/null || echo "NO DIST FOUND"
+RUN npx prisma generate
+RUN npx tsc -p tsconfig.build.json
+RUN ls dist/main.js && echo "BUILD SUCCESS"
 
 EXPOSE 5000
 CMD ["node", "dist/main.js"]
