@@ -3,7 +3,6 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'node:path';
 import { AppController } from './app.controller.js';
-import { AppService } from './app.service.js';
 import { PrismaModule } from './prisma/index.js';
 import { AuthModule } from './auth/auth.module.js';
 import { PostModule } from './post/post.module.js';
@@ -35,6 +34,5 @@ import { TagModule } from './tag/tag.module.js';
     TagModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
