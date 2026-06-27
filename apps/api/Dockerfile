@@ -1,6 +1,6 @@
 FROM node:20-slim
 
-RUN npm install -g prisma
+RUN npm install -g prisma @nestjs/cli
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ RUN npx prisma generate --schema=apps/api/prisma/schema.prisma
 
 COPY apps/api/ ./apps/api/
 WORKDIR /app/apps/api
-RUN /app/node_modules/.bin/nest build
+RUN nest build
 
 EXPOSE 5000
 CMD ["node", "dist/main"]
