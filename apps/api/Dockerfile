@@ -1,5 +1,6 @@
 FROM node:20-slim
 
+ARG CACHE_BUST=1
 RUN npm install -g prisma
 
 WORKDIR /app

@@ -21,12 +21,6 @@ import { TagModule } from './tag/tag.module.js';
       playground: true,
       csrfPrevention: false,
       bodyParserConfig: { limit: '10mb' },
-      cors: {
-        origin: true,
-        credentials: false,
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-        allowedHeaders: ['Content-Type', 'Authorization'],
-      },
       buildSchemaOptions: {
         dateScalarMode: 'isoDate',
       },
