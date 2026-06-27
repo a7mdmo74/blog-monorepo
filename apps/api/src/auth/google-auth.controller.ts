@@ -22,7 +22,7 @@ export class GoogleAuthController {
 
   @Get('google/callback')
   async googleCallback(@Req() req: any, @Res() res: any) {
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:3000').replace(/\/+$/, '');
 
     try {
       const code = req.query.code as string;
@@ -31,6 +31,8 @@ export class GoogleAuthController {
         return res.redirect(`${frontendUrl}/login?error=no_code`);
       }
 
+      const callbackUrl = process.env.GOOGLE_CALLBACK_URL || 'https://blog-monorepo-a7mdmo74.up.railway.app/auth/google/callback';
+
       const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -38,7 +40,7 @@ export class GoogleAuthController {
           code,
           client_id: process.env.GOOGLE_CLIENT_ID,
           client_secret: process.env.GOOGLE_CLIENT_SECRET,
-          redirect_uri: process.env.GOOGLE_CALLBACK_URL || 'https://blog-monorepo-a7mdmo74.up.railway.app/auth/google/callback',
+          redirect_uri: callbackUrl,
           grant_type: 'authorization_code',
         }),
       });
