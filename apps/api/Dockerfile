@@ -4,13 +4,13 @@ RUN npm install -g prisma
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+COPY apps/api/package.json apps/api/package-lock.json ./
 RUN npm ci
 
-COPY prisma ./prisma
+COPY apps/api/prisma ./prisma
 RUN npx prisma generate
 
-COPY . .
+COPY apps/api/ ./
 RUN npm run build
 
 EXPOSE 5000
