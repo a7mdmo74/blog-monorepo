@@ -22,63 +22,68 @@ export class GoogleAuthController {
 
   @Get('google/callback')
   async googleCallback(@Req() req: any, @Res() res: any) {
-    const code = req.query.code as string;
-
-    if (!code) {
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-      return res.redirect(`${frontendUrl}/login?error=no_code`);
-    }
-
-    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        code,
-        client_id: process.env.GOOGLE_CLIENT_ID,
-        client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        redirect_uri: process.env.GOOGLE_CALLBACK_URL || 'https://blog-monorepo-a7mdmo74.up.railway.app/auth/google/callback',
-        grant_type: 'authorization_code',
-      }),
-    });
-
-    const tokenData = await tokenRes.json();
-
-    if (!tokenData.access_token) {
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-      return res.redirect(`${frontendUrl}/login?error=token_exchange_failed`);
-    }
-
-    const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-      headers: { Authorization: `Bearer ${tokenData.access_token}` },
-    });
-
-    const googleUser = await userRes.json();
-
-    let user = await this.prisma.user.findUnique({
-      where: { email: googleUser.email },
-    });
-
-    if (!user) {
-      user = await this.prisma.user.create({
-        data: {
-          email: googleUser.email,
-          name: googleUser.name,
-          avatar: googleUser.picture,
-          password: 'google-oauth',
-        },
-      });
-    } else if (!user.avatar && googleUser.picture) {
-      user = await this.prisma.user.update({
-        where: { id: user.id },
-        data: { avatar: googleUser.picture },
-      });
-    }
-
-    const jwtToken = this.jwt.sign({ sub: user.id, email: user.email });
-
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    res.redirect(
-      `${frontendUrl}/auth/callback?token=${jwtToken}&user=${encodeURIComponent(JSON.stringify({ id: user.id, name: user.name, email: user.email }))}`,
-    );
+
+    try {
+      const code = req.query.code as string;
+
+      if (!code) {
+        return res.redirect(`${frontendUrl}/login?error=no_code`);
+      }
+
+      const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code,
+          client_id: process.env.GOOGLE_CLIENT_ID,
+          client_secret: process.env.GOOGLE_CLIENT_SECRET,
+          redirect_uri: process.env.GOOGLE_CALLBACK_URL || 'https://blog-monorepo-a7mdmo74.up.railway.app/auth/google/callback',
+          grant_type: 'authorization_code',
+        }),
+      });
+
+      const tokenData = await tokenRes.json();
+
+      if (!tokenData.access_token) {
+        console.error('Google token exchange failed:', tokenData);
+        return res.redirect(`${frontendUrl}/login?error=token_exchange_failed`);
+      }
+
+      const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+        headers: { Authorization: `Bearer ${tokenData.access_token}` },
+      });
+
+      const googleUser = await userRes.json();
+
+      let user = await this.prisma.user.findUnique({
+        where: { email: googleUser.email },
+      });
+
+      if (!user) {
+        user = await this.prisma.user.create({
+          data: {
+            email: googleUser.email,
+            name: googleUser.name,
+            avatar: googleUser.picture,
+            password: 'google-oauth',
+          },
+        });
+      } else if (!user.avatar && googleUser.picture) {
+        user = await this.prisma.user.update({
+          where: { id: user.id },
+          data: { avatar: googleUser.picture },
+        });
+      }
+
+      const jwtToken = this.jwt.sign({ sub: user.id, email: user.email });
+
+      res.redirect(
+        `${frontendUrl}/auth/callback?token=${jwtToken}&user=${encodeURIComponent(JSON.stringify({ id: user.id, name: user.name, email: user.email }))}`,
+      );
+    } catch (err) {
+      console.error('Google auth callback error:', err);
+      res.redirect(`${frontendUrl}/login?error=auth_failed`);
+    }
   }
 }
