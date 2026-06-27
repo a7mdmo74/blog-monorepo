@@ -1,0 +1,91 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Comment {
+  authorId: String!
+  content: String!
+  createdAt: DateTime!
+  id: ID!
+  parentId: String
+  postId: String!
+  updatedAt: DateTime!
+}
+
+input CreateCommentInput {
+  authorId: String!
+  content: String!
+  parentId: String
+  postId: String!
+}
+
+input CreatePostInput {
+  authorId: String!
+  categoryId: String
+  content: String
+  coverImage: String
+  excerpt: String
+  slug: String!
+  status: PostStatus = DRAFT
+  title: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Mutation {
+  createComment(input: CreateCommentInput!): Comment!
+  createPost(input: CreatePostInput!): Post!
+  deleteComment(id: ID!): Comment!
+  deletePost(id: ID!): Post!
+  updateComment(id: ID!, input: UpdateCommentInput!): Comment!
+  updatePost(id: ID!, input: UpdatePostInput!): Post!
+}
+
+type Post {
+  authorId: String!
+  categoryId: String
+  content: String
+  coverImage: String
+  createdAt: DateTime!
+  excerpt: String
+  id: ID!
+  publishedAt: Float
+  slug: String!
+  status: PostStatus!
+  title: String!
+  updatedAt: DateTime!
+}
+
+enum PostStatus {
+  ARCHIVED
+  DRAFT
+  PUBLISHED
+}
+
+type Query {
+  comment(id: ID!): Comment
+  comments(postId: ID!): [Comment!]!
+  post(id: ID!): Post
+  posts: [Post!]!
+}
+
+input UpdateCommentInput {
+  authorId: String
+  content: String
+  parentId: String
+  postId: String
+}
+
+input UpdatePostInput {
+  authorId: String
+  categoryId: String
+  content: String
+  coverImage: String
+  excerpt: String
+  slug: String
+  status: PostStatus = DRAFT
+  title: String
+}

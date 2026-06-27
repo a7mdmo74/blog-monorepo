@@ -1,0 +1,156 @@
+{
+  "info": {
+    "name": "Blog Monorepo API - Cloudinary Uploads",
+    "_postman_id": "cloudinary-upload-test",
+    "description": "Test Cloudinary image upload via GraphQL (base64 method)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "uploadedPublicId",
+      "value": "",
+      "description": "Set this after upload to test delete"
+    }
+  ],
+  "item": [
+    {
+      "name": "Upload Image (base64)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"mutation { uploadImage(file: \\\"{{fileBase64}}\\\", filename: \\\"{{filename}}\\\", folder: \\\"blog-monorepo\\\") { id url publicId filename mimetype bytes } }\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/graphql",
+          "host": ["{{baseUrl}}"],
+          "path": ["graphql"]
+        },
+        "description": "1. In your JS/frontend code, read the file as base64:\n   const reader = new FileReader();\n   reader.onload = () => {\n     const base64 = reader.result; // data:image/png;base64,...\n     // Send base64 as the 'file' variable\n   };\n   reader.readAsDataURL(file);\n\n2. Or use Postman pre-request script to convert a file to base64"
+      },
+      "response": []
+    },
+    {
+      "name": "Upload Image (Postman Auto)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"mutation { uploadImage(file: \\\"{{fileBase64}}\\\", filename: \\\"test-upload.png\\\", folder: \\\"blog-monorepo\\\") { id url publicId filename mimetype bytes } }\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/graphql",
+          "host": ["{{baseUrl}}"],
+          "path": ["graphql"]
+        },
+        "description": "Set collection variable 'fileBase64' with your base64 string before running.\n\nQuick test — paste this into a browser console to get a base64 string from a file:\n\n<input type='file' onchange=\"\n  const r = new FileReader();\n  r.onload = e => copy(e.target.result);\n  r.readAsDataURL(this.files[0]);\n\" />"
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Image",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"mutation { deleteImage(publicId: \\\"{{uploadedPublicId}}\\\") }\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/graphql",
+          "host": ["{{baseUrl}}"],
+          "path": ["graphql"]
+        },
+        "description": "Set 'uploadedPublicId' to the publicId returned from uploadImage mutation"
+      },
+      "response": []
+    },
+    {
+      "name": "Query Posts",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"{ posts { id title slug status createdAt } }\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/graphql",
+          "host": ["{{baseUrl}}"],
+          "path": ["graphql"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Post",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"mutation { createPost(input: { title: \\\"My New Post\\\", slug: \\\"my-new-post\\\", content: \\\"Hello World!\\\", excerpt: \\\"A test post\\\", authorId: \\\"cmqux2dtv0000xob5d1s9qlus\\\", status: PUBLISHED }) { id title slug status } }\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/graphql",
+          "host": ["{{baseUrl}}"],
+          "path": ["graphql"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Query Comments",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"{ comments(postId: \\\"cmqux2hex0003xob5yteo38r0\\\") { id content authorId postId createdAt } }\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/graphql",
+          "host": ["{{baseUrl}}"],
+          "path": ["graphql"]
+        }
+      },
+      "response": []
+    }
+  ]
+}
