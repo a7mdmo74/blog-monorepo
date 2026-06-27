@@ -20,6 +20,7 @@ import { TagModule } from './tag/tag.module.js';
       sortSchema: true,
       playground: true,
       csrfPrevention: false,
+      bodyParserConfig: { limit: '10mb' },
       buildSchemaOptions: {
         dateScalarMode: 'isoDate',
       },
