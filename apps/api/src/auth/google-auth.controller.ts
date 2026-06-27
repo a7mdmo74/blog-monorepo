@@ -48,8 +48,8 @@ export class GoogleAuthController {
       const tokenData = await tokenRes.json();
 
       if (!tokenData.access_token) {
-        console.error('Google token exchange failed:', tokenData);
-        return res.redirect(`${frontendUrl}/login?error=token_exchange_failed`);
+        console.error('Google token exchange failed:', JSON.stringify(tokenData));
+        return res.redirect(`${frontendUrl}/login?error=${encodeURIComponent(JSON.stringify(tokenData))}`);
       }
 
       const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
